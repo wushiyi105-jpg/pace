@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Pace · 备赛</title>
+<style>
+  :root{--bg:#0c1015;--panel:#151c24;--line:#25313d;--ink:#e9eff5;--dim:#8a9bab;--accent:#5ad19a}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,"PingFang SC",sans-serif}
+  .wrap{max-width:900px;margin:0 auto;padding:40px 20px 80px}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--dim);font-size:13px;margin-bottom:20px}
+  .cols{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:14px;margin:0 0 8px;color:var(--accent)}
+  .row{display:flex;justify-content:space-between;font-size:14px;padding:3px 0}
+  .finding{color:#e0a458;font-size:13px}
+  .tag{color:var(--dim);font-size:12px}
+  a{color:var(--accent);text-decoration:none}
+  .bar{height:4px;background:#20303c;border-radius:2px;margin-top:4px}
+  .bar i{display:block;height:4px;background:var(--accent);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Pace</h1>
+  <div class="sub">
+    {% if goal %}{{ goal.race }} · {{ '%.1f' % goal.distance_km }} 公里 · 目标 {{ goal.target_sec // 3600 }}:{{ '%02d' % (goal.target_sec % 3600 // 60) }}:{{ '%02d' % (goal.target_sec % 60) }}
+    · 目标配速 {{ goal.pace_sec // 60 }}:{{ '%02d' % (goal.pace_sec % 60) }}/公里{% else %}还没设目标{% endif %}
+    · {{ today }}
+  </div>
+
+  <div class="cols">
+    <div>
+      <div class="card"><h2>第 {{ week }} 周课表</h2>
+        {% for s in rows %}
+        <div class="row"><span>{{ s.day }} · {{ s.zone }} {{ '%.1f' % s.km }} 公里</span><span>{{ table.get(s.zone,'') }} · 完成 {{ '%.1f' % done.get(s.id, 0) }}</span></div>
+        {% endfor %}
+        {% if not rows %}<div class="tag">这一周没有课</div>{% endif %}
+        <p class="tag"><a href="/week/{{ week }}.ics">导出 ICS</a></p>
+      </div>
+      <div class="card"><h2>周完成率</h2>
+        {% for w in r.weeks %}
+        <div class="row"><span>第 {{ w.week }} 周 · {{ '%.0f' % (w.done / w.planned * 100 if w.planned else 0) }}%</span><span class="tag">{{ '%.1f' % w.done }} / {{ '%.1f' % w.planned }} 公里</span></div>
+        <div class="bar"><i style="width:{{ (w.done / w.planned * 100) if w.planned else 0 }}%"></i></div>
+        {% endfor %}
+      </div>
+    </div>
+    <div>
+      <div class="card"><h2>五区间配速</h2>
+        {% for z, p in table.items() %}<div class="row"><span>{{ z }}</span><span>{{ p }}/公里</span></div>{% endfor %}
+      </div>
+      <div class="card"><h2>扣分</h2>
+        {% for f in r.findings %}<div class="finding">{{ f.rule_id }} -{{ f.penalty }} · {{ f.message }}</div>{% endfor %}
+        <div class="row"><span>合计</span><span>{{ r.penalty_total }}</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="tag"><a href="/week/2.ics">第 2 周 ICS</a> · <a href="/health">健康检查</a></p>
+</div>
+</body>
+</html>

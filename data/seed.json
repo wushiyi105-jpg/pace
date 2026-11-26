@@ -1,0 +1,35 @@
+{
+  "goal": {"race": "城郊半程马拉松", "on": "2026-12-20", "distance_km": 21.1, "target_sec": 6300},
+  "sessions": [
+    {"week": 1, "day": "2026-11-24", "zone": "E", "km": 8},
+    {"week": 1, "day": "2026-11-25", "zone": "T", "km": 6},
+    {"week": 1, "day": "2026-11-26", "zone": "E", "km": 10},
+    {"week": 1, "day": "2026-11-27", "zone": "R", "km": 4},
+    {"week": 1, "day": "2026-11-29", "zone": "E", "km": 12},
+    {"week": 2, "day": "2026-12-01", "zone": "E", "km": 8},
+    {"week": 2, "day": "2026-12-02", "zone": "I", "km": 6},
+    {"week": 2, "day": "2026-12-03", "zone": "T", "km": 8},
+    {"week": 2, "day": "2026-12-05", "zone": "E", "km": 14},
+    {"week": 2, "day": "2026-12-06", "zone": "E", "km": 10},
+    {"week": 3, "day": "2026-12-08", "zone": "E", "km": 10},
+    {"week": 3, "day": "2026-12-09", "zone": "M", "km": 8},
+    {"week": 3, "day": "2026-12-10", "zone": "T", "km": 8},
+    {"week": 3, "day": "2026-12-12", "zone": "E", "km": 16.5},
+    {"week": 3, "day": "2026-12-13", "zone": "E", "km": 7.5}
+  ],
+  "logs": [
+    {"session": 1, "km": 8, "rpe": 3},
+    {"session": 2, "km": 6, "rpe": 7},
+    {"session": 3, "km": 10, "rpe": 3},
+    {"session": 4, "km": 4, "rpe": 8},
+    {"session": 5, "km": 10, "rpe": 4},
+    {"session": 6, "km": 6, "rpe": 3},
+    {"session": 7, "km": 4, "rpe": 8},
+    {"session": 8, "km": 5, "rpe": 7},
+    {"session": 9, "km": 3, "rpe": 5},
+    {"session": 11, "km": 9, "rpe": 3},
+    {"session": 12, "km": 8, "rpe": 6},
+    {"session": 13, "km": 4, "rpe": 8},
+    {"session": 14, "km": 7, "rpe": 5}
+  ]
+}
