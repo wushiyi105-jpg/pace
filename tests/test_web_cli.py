@@ -37,7 +37,7 @@ def test_ics_route_without_goal(store, settings):
 def test_cli_cli_week_missing(tmp_path):
     runner = CliRunner()
     db = str(tmp_path / "c.db")
-    assert runner.invoke(app, ["week", "--week", "3"]).exit_code != 0
+    assert runner.invoke(app, ["week", "--week", "3", "--db", db]).exit_code != 0
     assert runner.invoke(app, ["review", "--db", db]).exit_code == 0
 
 

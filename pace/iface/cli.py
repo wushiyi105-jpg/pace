@@ -64,9 +64,9 @@ def zones(db: Path = typer.Option(None)) -> None:
 
 
 @app.command()
-def week(w: int = typer.Option(1, "--week")) -> None:
+def week(w: int = typer.Option(1, "--week"), db: Path = typer.Option(None)) -> None:
     """某一周的课表（只读）。"""
-    s = _settings(None)
+    s = _settings(db)
     store = _store(s)
     goal = store.goal()
     rows = [x for x in store.list_sessions() if x.week == w]
