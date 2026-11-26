@@ -90,7 +90,7 @@ def log(
     console.print(f"已记 #{store.log(session, km, rpe)}：{km:g} 公里，RPE {rpe}")
 
 
-@app.command()
+@app.command("review")
 def review_cmd(db: Path = typer.Option(None)) -> None:
     """周量、完成率、长距离、扣分。"""
     store = _store(_settings(db))
@@ -102,10 +102,9 @@ def review_cmd(db: Path = typer.Option(None)) -> None:
     console.print(f"合计扣 {r.penalty_total} 分")
 
 
-app.command(name="review")(review_cmd)
 
 
-@app.command()
+@app.command("suggest")
 def suggest_cmd(db: Path = typer.Option(None)) -> None:
     """模型出下周课表（无 key 时打印区间表）。"""
     s = _settings(db)
@@ -119,7 +118,6 @@ def suggest_cmd(db: Path = typer.Option(None)) -> None:
         console.print("模型没开，用 zones 看区间")
 
 
-app.command(name="suggest")(suggest_cmd)
 
 
 @app.command()

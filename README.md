@@ -8,13 +8,8 @@
 
 半马 1:45 的四周课表：五个区间配速、周量增幅、完成率重排，导出 ICS 进日历。
 
-## 为什么不是一张训练计划表
 
-训练计划最容易崩在两处：一周加太多量，或者连续两周没跑完还硬按原计划顶。Pace 把这两件事变成
-可查的数字：相邻周量涨幅超过 10% 直接报；连续两周完成率低于 60% 就建议降量，而不是让你「再坚持一下」。
-模型只在区间里填课表，给的配速出了允许带就丢。
-
-## 它做什么
+## 功能特性
 
 1. **五区间配速**：E +80 秒、M +35 秒、T 目标、I -20 秒、R -35 秒（每公里）。
 2. **周量增幅**：相邻周超过 10% 提醒。
@@ -22,7 +17,16 @@
 4. **赛前长距离**：最长一次要跑到比赛距离的 70%。
 5. **ICS 导出**：一周课表直接进日历。
 
-## 怎么用
+### 规则与扣分
+
+| rule_id | 含义 | 扣分 |
+| --- | --- | --- |
+| `load.increase` | 相邻周量涨幅 > 10% | 6 |
+| `plan.replan` | 连续两周完成率 < 60% | 8 |
+| `race.long` | 最长一次不到比赛距离 70% | 5 |
+| `guard.pace` | 模型给的配速不在允许带，丢弃 | 6 |
+
+## 快速开始
 
 ```bash
 pip install -e ".[dev]"
@@ -41,20 +45,130 @@ python -m pace serve        # http://127.0.0.1:8014
 第 2 周比第 1 周涨 15%，判 `load.increase`；第 2、3 周连着低于 60%，判 `plan.replan`，合计扣 14 分。
 最长一次 16.5 公里，过了半马 70%（14.8 公里）的线，`race.long` 不触发。
 
-## 规则与扣分
+## 为什么不用通用大模型直接问
 
-| rule_id | 含义 | 扣分 |
-| --- | --- | --- |
-| `load.increase` | 相邻周量涨幅 > 10% | 6 |
-| `plan.replan` | 连续两周完成率 < 60% | 8 |
-| `race.long` | 最长一次不到比赛距离 70% | 5 |
-| `guard.pace` | 模型给的配速不在允许带，丢弃 | 6 |
+训练计划最容易崩在两处：一周加太多量，或者连续两周没跑完还硬按原计划顶。Pace 把这两件事变成
+可查的数字：相邻周量涨幅超过 10% 直接报；连续两周完成率低于 60% 就建议降量，而不是让你「再坚持一下」。
+模型只在区间里填课表，给的配速出了允许带就丢。
 
-## 边界
+## 适用场景
+
+- 报了半马，需要一个四周课表并知道每节课该跑多快。
+- 前两周没跑完，想知道该降量还是继续顶。
+- 课表想直接进手机日历。
+
+### 边界
 
 - 不接手表/Strava，完成记录自己录；
 - RPE 1–10，只作参考；
 - 不做伤病判断，疼就停。
+
+## Roadmap
+
+- 接 Strava / Garmin，完成记录自动进来。
+- 按心率区间给课，不只按配速。
+- 多赛事并行（半马与全马分开排）。
+
+## FAQ
+
+**配速怎么算出来的？**
+从目标时间反推，E +80 秒、M +35 秒、T 目标、I −20 秒、R −35 秒（每公里）。
+
+**不接手表怎么记？**
+`log` 手动录公里与 RPE。
+
+**什么时候建议降量？**
+连续两周完成率低于 60%，下两周计划降 10%。
+
+## 命令参考
+
+| 命令 | 作用 | 常用参数 |
+| --- | --- | --- |
+| `seed` | 写入目标、四周课表与完成记录。 | --db |
+| `zones` | 五区间配速表。 | --db |
+| `week` | 某一周的课表（只读）。 | --week, --db |
+| `log` | 记一次完成。 | --session, --km, --rpe, --db |
+| `review` | 周量、完成率、长距离、扣分。 | --db |
+| `suggest` | 模型出下周课表（无 key 时打印区间表）。 | --db |
+| `ics` | 把某一周导出成 ICS。 | --week, --db |
+| `doctor` | 四项体检。 | --db |
+| `serve` | Web 界面。 | --port, --db |
+
+全部命令都支持 `--help`；只读命令不带参数时读默认库 `data/pace.db`，写命令用 `--db` 指到别的库。
+
+## 依赖说明
+
+| 依赖 | 为什么装 | 不装会怎样 |
+| --- | --- | --- |
+| `fastapi` + `uvicorn[standard]` | Web 入口与 ASGI 服务 | 只有命令行，没有页面 |
+| `jinja2` | 服务端渲染模板 | 页面出不来 |
+| `pydantic` + `pydantic-settings` | 配置与数据结构校验，`.env` 直接生效 | 配置散在代码里，改端口要改源码 |
+| `httpx` | 调模型与 webhook 的 HTTP 客户端 | 模型层与推送都不可用 |
+| `typer` + `rich` | 命令行与终端表格 | 只能用 curl 调接口 |
+| `sqlalchemy` + `alembic` | 本地库与迁移 | 表结构变更只能删库重来 |
+| `pytest` / `pytest-cov` / `respx` / `freezegun`（dev） | 单测、覆盖率、HTTP 打桩、冻结时间 | 规则改动没有回归保护 |
+| `ruff` / `mypy` / `pip-audit`（dev） | 风格、类型、依赖漏洞检查 | CI 只看测试，类型错误会漏进主干 |
+
+装了 `uv` 的话，`uv sync --extra dev` 会按 `uv.lock` 装同一套版本。
+
+## 工作原理
+
+```mermaid
+graph LR
+  A[比赛目标] --> M[五区间配速]
+  B[课表] --> M[周量 / 完成率 / 长距离]
+  C[完成记录] --> M
+  M --> R[规则：涨幅 / 重排 / 长距离]
+  R --> P[模型填课表]
+  P --> G[配速守卫]
+  G --> O[ICS + 看板]
+```
+
+
+domain 里是五区间配速、周量增幅、完成率重排与长距离；app 负责周报与 ICS。
+
+## 目录结构
+
+```
+pace/
+├── .github/
+│   ├── ISSUE_TEMPLATE
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── workflows
+├── assets/
+│   └── demo.gif
+├── data/
+│   ├── pace.db
+│   └── seed.json
+├── migrations/
+│   ├── __init__.py
+│   ├── env.py
+│   ├── script.py.mako
+│   └── versions
+├── pace/
+│   └── … 9 项
+├── prompts/
+│   └── coach.md
+├── templates/
+│   └── index.html
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py
+│   ├── test_engine_ics.py
+│   ├── test_load_completion.py
+│   ├── test_web_cli.py
+│   └── test_zones.py
+├── CHANGELOG.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── Dockerfile
+├── LICENSE
+├── README.en.md
+├── README.md
+├── SECURITY.md
+├── alembic.ini
+├── pyproject.toml
+```
 
 ## 作者
 
