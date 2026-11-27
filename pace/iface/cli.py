@@ -9,8 +9,9 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
+from ..adapters.llm import build_llm
 from ..adapters.store import SqliteStore
-from ..app.run import current, export, suggest, zone_table
+from ..app.run import PROMPT, current, export, suggest, zone_table
 from ..config import Settings
 from ..config import settings as default_settings
 from ..doctor import main as doctor_main
@@ -109,7 +110,8 @@ def suggest_cmd(db: Path = typer.Option(None)) -> None:
     """模型出下周课表（无 key 时打印区间表）。"""
     s = _settings(db)
     store = _store(s)
-    rows, findings = suggest(store, s)
+    llm = build_llm(s.llm_base_url, s.llm_api_key, s.llm_model, PROMPT) if s.llm_enabled else None
+    rows, findings = suggest(store, s, llm)
     for r in rows:
         console.print(f"{r.get('day')} {r.get('zone')} {r.get('km')} 公里")
     for f in findings:

@@ -4,27 +4,27 @@ from __future__ import annotations
 
 import json
 from datetime import date
+from pathlib import Path
 
-from ..adapters.llm import build_llm
-from ..adapters.store import SqliteStore
 from ..config import Settings
 from ..domain.engine import days_left, replan, review, zone_table
 from ..domain.guard import check
 from ..domain.ics import build as ics_build
 from ..domain.models import Finding, Review
+from ..ports import LLMPort, StorePort
 
-PROMPT = """给下一周训练课表，输出 JSON：
-{"sessions": [{"day": "YYYY-MM-DD", "zone": "E|M|T|I|R", "km": 8, "pace_sec": 380}]}
-规则：周总量比上周涨幅不超过 10%；配速必须落在给定区间的允许带内；只报数字，不承诺成绩。"""
+PROMPT = (Path(__file__).resolve().parents[2] / "prompts" / "coach.md").read_text(encoding="utf-8")
 
 
-def current(store: SqliteStore) -> Review:
+def current(store: StorePort) -> Review:
     return review(store.list_sessions(), store.done_map(), store.goal())
 
 
-def suggest(store: SqliteStore, settings: Settings) -> tuple[list[dict], list[Finding]]:
+def suggest(
+    store: StorePort, settings: Settings, llm: LLMPort | None = None
+) -> tuple[list[dict], list[Finding]]:
     goal = store.goal()
-    if goal is None or not settings.llm_enabled:
+    if goal is None or llm is None:
         return [], []
     r = current(store)
     table = zone_table(goal)
@@ -36,7 +36,6 @@ def suggest(store: SqliteStore, settings: Settings) -> tuple[list[dict], list[Fi
         "weeks": [{"week": w.week, "planned": w.planned, "done": w.done} for w in r.weeks],
         "replan": replan(store.list_sessions(), r),
     }
-    llm = build_llm(settings.llm_base_url, settings.llm_api_key, settings.llm_model, PROMPT)
     try:
         data = json.loads(llm.write(PROMPT, json.dumps(facts, ensure_ascii=False)))
     except Exception:  # noqa: BLE001
@@ -44,7 +43,7 @@ def suggest(store: SqliteStore, settings: Settings) -> tuple[list[dict], list[Fi
     return check(list(data.get("sessions", [])), goal.pace_sec)
 
 
-def export(store: SqliteStore, week: int) -> str:
+def export(store: StorePort, week: int) -> str:
     goal = store.goal()
     if goal is None:
         raise ValueError("先设目标")
