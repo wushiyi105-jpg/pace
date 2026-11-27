@@ -12,10 +12,12 @@ from rich.console import Console
 from ..adapters.llm import build_llm
 from ..adapters.notify import WebhookNotifier
 from ..adapters.store import SqliteStore
+from ..app.report import build_report, default_week, sessions_for_ics
 from ..app.run import PROMPT, current, export, suggest, zone_table
 from ..config import Settings
 from ..config import settings as default_settings
 from ..doctor import main as doctor_main
+from ..domain.ics import build as ics_build
 
 app = typer.Typer(help="跑步备赛：配速与周量", no_args_is_help=True)
 console = Console()
@@ -132,6 +134,36 @@ def suggest_cmd(db: Path = typer.Option(None)) -> None:
         console.print(line)
         body.append(line)
     _notify(s, "\n".join(body))
+
+
+@app.command()
+def report(
+    week: int = typer.Option(0, "--week", help="周次；0 表示离今天最近的一周"),
+    out: Path = typer.Option(None, help="输出 Markdown；给出后同时写同名 .ics"),
+    ics_out: Path = typer.Option(None, help="ICS 单独输出路径"),
+    no_llm: bool = typer.Option(False, "--no-llm"),
+    db: Path = typer.Option(None),
+) -> None:
+    """本周课表卡片 + 完成率 + ICS，一条命令出。"""
+    s = _settings(db)
+    store = _store(s)
+    goal = store.goal()
+    if goal is None:
+        console.print("[red]先 seed 设目标[/]")
+        raise typer.Exit(code=1)
+    w = week or default_week(store)
+    llm = build_llm(s.llm_base_url, s.llm_api_key, s.llm_model, PROMPT) if s.llm_enabled and not no_llm else None
+    text, rows, source = build_report(store, s, w, llm)
+    if out:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text, encoding="utf-8")
+        target = ics_out or out.with_suffix(".ics")
+        target.write_text(ics_build(sessions_for_ics(rows, w), goal.pace_sec), encoding="utf-8")
+        console.print(f"[green]已写出[/] {out} + {target}（{len(rows)} 次课）")
+    else:
+        console.print(text)
+    if source == "plan" and llm is None:
+        console.print("[dim]本次为本地排课：模型未参与，课表来自计划/周期模板。[/]")
 
 
 @app.command()

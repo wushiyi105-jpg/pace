@@ -1,0 +1,48 @@
+{
+  "templates": [
+    {
+      "name": "5K 入门",
+      "distance_km": 5,
+      "weeks": 8,
+      "phases": [
+        {"name": "走跑结合", "week_from": 1, "week_to": 3, "sessions": [["E", 3], ["E", 3], ["E", 4]]},
+        {"name": "连续慢跑", "week_from": 4, "week_to": 5, "sessions": [["E", 4], ["E", 4], ["E", 5]]},
+        {"name": "加入短间歇", "week_from": 6, "week_to": 7, "sessions": [["E", 4], ["I", 2], ["E", 5]]},
+        {"name": "减量与测试", "week_from": 8, "week_to": 8, "sessions": [["E", 3], ["R", 1], ["E", 5]]}
+      ]
+    },
+    {
+      "name": "10K 进阶",
+      "distance_km": 10,
+      "weeks": 10,
+      "phases": [
+        {"name": "有氧基础", "week_from": 1, "week_to": 3, "sessions": [["E", 5], ["E", 6], ["E", 8]]},
+        {"name": "阈值适应", "week_from": 4, "week_to": 6, "sessions": [["E", 6], ["T", 4], ["E", 9]]},
+        {"name": "专项耐力", "week_from": 7, "week_to": 8, "sessions": [["E", 7], ["T", 5], ["E", 11]]},
+        {"name": "减量与比赛", "week_from": 9, "week_to": 10, "sessions": [["E", 5], ["R", 2], ["E", 10]]}
+      ]
+    },
+    {
+      "name": "半马 12 周",
+      "distance_km": 21.1,
+      "weeks": 12,
+      "phases": [
+        {"name": "基础期", "week_from": 1, "week_to": 4, "sessions": [["E", 6], ["E", 8], ["E", 12]]},
+        {"name": "阈值期", "week_from": 5, "week_to": 8, "sessions": [["E", 8], ["T", 6], ["E", 16]]},
+        {"name": "专项期", "week_from": 9, "week_to": 10, "sessions": [["E", 9], ["M", 8], ["E", 18]]},
+        {"name": "减量期", "week_from": 11, "week_to": 12, "sessions": [["E", 7], ["R", 3], ["E", 21.1]]}
+      ]
+    },
+    {
+      "name": "全马 16 周",
+      "distance_km": 42.2,
+      "weeks": 16,
+      "phases": [
+        {"name": "基础期", "week_from": 1, "week_to": 5, "sessions": [["E", 8], ["E", 10], ["E", 18]]},
+        {"name": "阈值期", "week_from": 6, "week_to": 9, "sessions": [["E", 10], ["T", 8], ["E", 24]]},
+        {"name": "专项期", "week_from": 10, "week_to": 13, "sessions": [["E", 12], ["M", 12], ["E", 30]]},
+        {"name": "减量期", "week_from": 14, "week_to": 16, "sessions": [["E", 8], ["R", 4], ["E", 42.2]]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "zones": [
+    {"code": "E", "name": "轻松跑", "offset_sec": 80, "band_sec": 20, "purpose": "堆有氧，能说完整句子"},
+    {"code": "M", "name": "马拉松配速", "offset_sec": 35, "band_sec": 20, "purpose": "比赛配速适应"},
+    {"code": "T", "name": "阈值", "offset_sec": 0, "band_sec": 12, "purpose": "提升乳酸阈值，20-40 分钟一段"},
+    {"code": "I", "name": "间歇", "offset_sec": -20, "band_sec": 12, "purpose": "3-5 分钟一组，组间慢跑"},
+    {"code": "R", "name": "重复跑", "offset_sec": -35, "band_sec": 12, "purpose": "短冲，改善跑姿与速度"}
+  ],
+  "injury_rules": [
+    {"id": "pain.stop", "name": "疼痛即停", "rule": "跑中疼痛超过 3 分（10 分制）立即停，不靠意志顶。"},
+    {"id": "load.cap", "name": "周量上限", "rule": "周总量比上周涨幅不超过 10%，连续两周不叠加。"},
+    {"id": "long.cap", "name": "长距离占比", "rule": "单次长距离不超过周总量的 35%，全马专项不超过 40%。"},
+    {"id": "down.week", "name": "每四周减量", "rule": "每第 4 周总量降到前一周的 70%-80%。"},
+    {"id": "strength.two", "name": "力量两次", "rule": "每周两次力量，避开长距离前后 24 小时。"},
+    {"id": "sleep.floor", "name": "睡眠底线", "rule": "连续两晚睡眠少于 6 小时，次日高强度课改为轻松跑。"},
+    {"id": "sick.return", "name": "病后复跑", "rule": "发热或咳嗽未清时只走路；复跑第一周总量减半，不碰间歇。"},
+    {"id": "cross.train", "name": "交叉训练", "rule": "跑量下降期用游泳/单车补有氧，不把缺口一次性补回。"}
+  ]
+}
