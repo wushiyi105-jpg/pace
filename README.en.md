@@ -6,7 +6,7 @@
 
 ![usage](assets/demo.gif)
 
-A four-week half-marathon block: five pace zones, weekly load, replanning and an ICS export.
+A three-week half-marathon block: five pace zones, weekly load, replanning and an ICS export.
 
 ## Features
 
@@ -53,6 +53,9 @@ From the target time, then the five zones are offset from it.
 **What if I do not use a watch?**
 Log kilometres and RPE manually with `log`.
 
+**Was the Docker image verified?**
+Docker is not installed on the build machine, so `docker build .` was not run and the image is unverified; only the Dockerfile and ports were checked statically.
+
 ## Commands
 
 See the Chinese README (`README.md`) for the command table with flags; every command supports `--help`.
@@ -65,13 +68,13 @@ FastAPI + Uvicorn, Jinja2, pydantic / pydantic-settings, httpx, Typer + Rich, SQ
 
 ```mermaid
 graph LR
-  A[比赛目标] --> M[五区间配速]
-  B[课表] --> M[周量 / 完成率 / 长距离]
-  C[完成记录] --> M
-  M --> R[规则：涨幅 / 重排 / 长距离]
-  R --> P[模型填课表]
-  P --> G[配速守卫]
-  G --> O[ICS + 看板]
+  A[race goal] --> M[five pace zones]
+  B[plan] --> M[weekly volume / completion / long runs]
+  C[logs] --> M
+  M --> R[rules: load jump / replan / long run]
+  R --> P[model fills plan]
+  P --> G[pace guard]
+  G --> O[ICS + board]
 ```
 
 ## Layout

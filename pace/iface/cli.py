@@ -103,8 +103,6 @@ def review_cmd(db: Path = typer.Option(None)) -> None:
     console.print(f"合计扣 {r.penalty_total} 分")
 
 
-
-
 @app.command("suggest")
 def suggest_cmd(db: Path = typer.Option(None)) -> None:
     """模型出下周课表（无 key 时打印区间表）。"""
@@ -118,8 +116,6 @@ def suggest_cmd(db: Path = typer.Option(None)) -> None:
         console.print(f"  [yellow]{f.rule_id}[/] -{f.penalty} {f.message}")
     if not rows:
         console.print("模型没开，用 zones 看区间")
-
-
 
 
 @app.command()
