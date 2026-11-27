@@ -9,7 +9,7 @@ description = "跑步备赛：五区间配速、周量增幅、完成率重排"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "shiyi", email = "wushiyi105@gmail.com" }]
+authors = [{ name = "小米", email = "wushiyi105@gmail.com" }]
 dependencies = [
   "fastapi>=0.115",
   "uvicorn[standard]>=0.30",
