@@ -1,19 +1,24 @@
-"""主用例只依赖 ports：用 MagicMock 内存假实现，不建 SQLite 文件。"""
+"""真实内存 Store 跑 current：不建 SQLite，mypy 校验 StorePort。"""
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
-
 from pace.app.run import current
+from pace.domain.models import Goal, Session
 from pace.ports import StorePort
 
 
-def test_main_path_with_memory_store(tmp_path) -> None:
-    store = MagicMock(spec=StorePort)
-    store.goal.return_value = None
-    store.list_sessions.return_value = []
-    store.done_map.return_value = {}
-    
+class InMemoryStore:
+    def goal(self) -> Goal | None:
+        return None
+
+    def list_sessions(self) -> list[Session]:
+        return []
+
+    def done_map(self) -> dict[int, float]:
+        return {}
+
+
+def test_current_with_memory_store() -> None:
+    store: StorePort = InMemoryStore()
     out = current(store)
-    assert out is not None
-    assert not (tmp_path / "app.db").exists()
+    assert out.weeks == []
