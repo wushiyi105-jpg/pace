@@ -1,6 +1,6 @@
 {% from "_macros.html" import shell, head, stats, card, tag, empty, note %}
-{% call shell("Pace", "备赛", true) %}
-{{ head("备赛进度",
+{% call shell("Pace", "备赛周板", true) %}
+{{ head("下一次训练跑什么",
   (goal.race ~ " · " ~ "%.1f"|format(goal.distance_km) ~ " 公里 · 目标 " ~ (goal.target_sec // 3600) ~ ":" ~ "%02d"|format(goal.target_sec % 3600 // 60) ~ ":" ~ "%02d"|format(goal.target_sec % 60))
   if goal else "还没设目标") }}
 
